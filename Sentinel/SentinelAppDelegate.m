@@ -16,18 +16,48 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 
-    CGRect webFrame = [[UIScreen mainScreen] applicationFrame];
-    view = [[UIWebView alloc] initWithFrame:webFrame];
-    [self.window addSubview:view];
-    
-    NSURL *url = [NSURL URLWithString:@"http://localhost:8080"];
-    
-    NSURLRequest *requestObj = [NSURLRequest requestWithURL:url];
+	theRequest=[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://128.238.151.253/"] 	  
+								cachePolicy:NSURLRequestUseProtocolCachePolicy						  
+							timeoutInterval:60.0];
+	
+	theConnection=[[NSURLConnection alloc] initWithRequest:theRequest delegate:self];
+	
+	view = [[UIWebView alloc] initWithFrame:CGRectMake(0,0,320,240)];
+	[self.window addSubview:view];
+	[self.window makeKeyAndVisible];
+	return YES;
+}
 
-    [view loadRequest:requestObj];
-    
-    [self.window makeKeyAndVisible];
-    return YES;
+- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+	if ([challenge previousFailureCount] == 0)
+	{
+		NSURLCredential *newCredential;
+		newCredential=[NSURLCredential credentialWithUser:@"kongcao7bl"
+												 password:@"Kongcao7BL"
+											  persistence:NSURLCredentialPersistenceForSession];
+		[[challenge sender] useCredential:newCredential forAuthenticationChallenge:challenge];
+		NSURL *url = [NSURL URLWithString:@"http://128.238.151.253/nphMotionJpeg?Resolution=320x240&Quality=Standard"];
+		NSURLRequest *requestObj = [NSURLRequest requestWithURL:url];
+		[view loadRequest:requestObj];
+	}
+	else
+	{
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Authentication Failure" 
+														message:@"Invalid username/password."
+													   delegate:nil
+											  cancelButtonTitle:@"OK" 
+											  otherButtonTitles:nil];
+		[alert show];
+		[alert release];
+	}
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
+    [connection release];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+{
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application

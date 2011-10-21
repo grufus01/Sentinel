@@ -10,6 +10,8 @@
 
 @interface SentinelAppDelegate : NSObject <UIApplicationDelegate> {
     UIWebView *view;
+	NSURLRequest *theRequest;
+	NSURLConnection *theConnection;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
